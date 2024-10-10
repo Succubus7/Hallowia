@@ -300,19 +300,57 @@
             }
         }
 
+        const timerToggleBtn = document.getElementById('timerToggle');
+        let isTimerRunning = false;
+        let timeLeft = 30;
+
+        // Charger le son
+        const timerEndSound = new Audio('https://soundbible.com/grab.php?id=1496&type=mp3');
+
         // Fonction pour démarrer le minuteur
         function startTimer() {
-            let timeLeft = 30;
-            timerDiv.textContent = timeLeft;
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                timerToggleBtn.textContent = 'Arrêter';
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    timerDiv.textContent = timeLeft;
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        timerToggleBtn.textContent = 'Redémarrer';
+                        timerEndSound.play();
+                    }
+                }, 1000);
+            }
+        }
+
+        // Fonction pour arrêter le minuteur
+        function stopTimer() {
             clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                timerDiv.textContent = timeLeft;
+            isTimerRunning = false;
+            timerToggleBtn.textContent = 'Reprendre';
+        }
+
+        // Fonction pour réinitialiser le minuteur
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 30;
+            timerDiv.textContent = timeLeft;
+            isTimerRunning = false;
+            timerToggleBtn.textContent = 'Démarrer';
+        }
+
+        // Fonction pour basculer le minuteur
+        function toggleTimer() {
+            if (isTimerRunning) {
+                stopTimer();
+            } else {
                 if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    showNextImage();
+                    resetTimer();
                 }
-            }, 1000);
+                startTimer();
+            }
         }
 
         // Fonction pour afficher l'image suivante
@@ -328,6 +366,7 @@
             currentIndex = (currentIndex + 1) % images.length;
             gallery.children[currentIndex].classList.add('active');
             updateImageCounter();
+            resetTimer();
             startTimer();
             console.log('Image affichée:', currentIndex);
         }
@@ -339,6 +378,7 @@
                 currentIndex = (currentIndex - 1 + images.length) % images.length;
                 gallery.children[currentIndex].classList.add('active');
                 updateImageCounter();
+                resetTimer();
                 startTimer();
             }
         }
@@ -394,7 +434,7 @@
             setTimeout(() => scoreDiv.classList.remove('score-change'), 300);
         }
 
-        // Initialisation
+   // Initialisation
         loadImagesFromGitHub();
 
         // Écouteurs d'événements
@@ -405,6 +445,7 @@
         team1MinusBtn.addEventListener('click', () => updateScore(1, -1));
         team2PlusBtn.addEventListener('click', () => updateScore(2, 1));
         team2MinusBtn.addEventListener('click', () => updateScore(2, -1));
+        timerToggleBtn.addEventListener('click', toggleTimer);
 
         // Gestion des touches du clavier
         document.addEventListener('keydown', (e) => {
@@ -415,6 +456,7 @@
             if (e.key === 'q') updateScore(1, -1);
             if (e.key === '2') updateScore(2, 1);
             if (e.key === 'w') updateScore(2, -1);
+            if (e.key === ' ') toggleTimer(); // Espace pour démarrer/arrêter le minuteur
         });
 
         // Gestion de la sortie du mode plein écran
