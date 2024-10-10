@@ -14,20 +14,26 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
+            font-size: 24px; /* Augmentation de la taille de base du texte */
         }
         h1 {
-            font-size: 3rem;
-            text-shadow: 2px 2px 4px #000000;
-            margin: 20px 0;
+            font-size: 5rem; /* Titre plus grand */
+            text-shadow: 4px 4px 8px #000000;
+            margin: 40px 0;
+        }
+        .gallery-container {
+            width: 90vw; /* Utilisation de la largeur de vue pour s'adapter à l'écran */
+            height: 70vh; /* Utilisation de la hauteur de vue pour s'adapter à l'écran */
+            position: relative;
         }
         .gallery {
-            width: 80%;
-            max-width: 800px;
-            aspect-ratio: 16/9;
+            width: 100%;
+            height: 100%;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 20px #ff6600;
+            box-shadow: 0 0 40px #ff6600;
         }
         .gallery img {
             width: 100%;
@@ -41,41 +47,64 @@
             opacity: 1;
         }
         .controls {
-            margin-top: 20px;
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
         }
         button {
             font-family: 'Creepster', cursive;
-            font-size: 1.2rem;
+            font-size: 2rem;
             background-color: #ff6600;
             color: #1a1a1a;
             border: none;
-            padding: 10px 20px;
-            margin: 0 10px;
+            padding: 20px 40px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.1s;
         }
         button:hover {
             background-color: #ff8533;
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.95);
         }
         .image-counter {
-            font-size: 1.2rem;
-            margin-top: 10px;
+            font-size: 2rem;
+            margin-top: 20px;
         }
         #loading {
             color: #ff6600;
-            font-size: 1.5rem;
-            margin-top: 20px;
+            font-size: 2.5rem;
+            margin-top: 40px;
+        }
+        /* Style pour le mode plein écran */
+        .fullscreen .gallery-container {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+        }
+        .fullscreen .controls,
+        .fullscreen .image-counter,
+        .fullscreen h1 {
+            display: none;
         }
     </style>
 </head>
 <body>
     <h1>Expressions Françaises Effrayantes</h1>
-    <div class="gallery">
-        <!-- Les images seront ajoutées ici dynamiquement -->
+    <div class="gallery-container">
+        <div class="gallery">
+            <!-- Les images seront ajoutées ici dynamiquement -->
+        </div>
     </div>
     <div class="controls">
         <button id="prevBtn">Précédent</button>
         <button id="nextBtn">Suivant</button>
+        <button id="fullscreenBtn">Plein Écran</button>
     </div>
     <div class="image-counter">Image <span id="currentImage">1</span> / <span id="totalImages">0</span></div>
     <div id="loading">Chargement des images...</div>
@@ -84,16 +113,18 @@
         const gallery = document.querySelector('.gallery');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
         const currentImageSpan = document.getElementById('currentImage');
         const totalImagesSpan = document.getElementById('totalImages');
         const loadingDiv = document.getElementById('loading');
+        const body = document.body;
         let currentIndex = 0;
         let images = [];
 
         // Configuration GitHub
-        const owner = 'Succubus7';
-        const repo = 'Hallowia';
-        const path = '/images';
+        const owner = 'VOTRE_NOM_UTILISATEUR_GITHUB';
+        const repo = 'VOTRE_NOM_DE_REPO';
+        const path = 'chemin/vers/votre/dossier/images';
 
         // Fonction pour charger les images depuis GitHub
         async function loadImagesFromGitHub() {
@@ -145,12 +176,57 @@
             currentImageSpan.textContent = currentIndex + 1;
         }
 
+        // Fonction pour basculer en mode plein écran
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                if (body.requestFullscreen) {
+                    body.requestFullscreen();
+                } else if (body.mozRequestFullScreen) { // Firefox
+                    body.mozRequestFullScreen();
+                } else if (body.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                    body.webkitRequestFullscreen();
+                } else if (body.msRequestFullscreen) { // IE/Edge
+                    body.msRequestFullscreen();
+                }
+                body.classList.add('fullscreen');
+                fullscreenBtn.textContent = 'Quitter Plein Écran';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                body.classList.remove('fullscreen');
+                fullscreenBtn.textContent = 'Plein Écran';
+            }
+        }
+
         // Initialisation
         loadImagesFromGitHub();
 
         // Écouteurs d'événements
         nextBtn.addEventListener('click', showNextImage);
         prevBtn.addEventListener('click', showPrevImage);
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+        // Gestion des touches du clavier
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') showNextImage();
+            if (e.key === 'ArrowLeft') showPrevImage();
+            if (e.key === 'f') toggleFullscreen();
+        });
+
+        // Gestion de la sortie du mode plein écran
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                body.classList.remove('fullscreen');
+                fullscreenBtn.textContent = 'Plein Écran';
+            }
+        });
     </script>
 </body>
 </html>
