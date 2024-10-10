@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HallowIA</title>
+    <title>Galerie Halloween d'expressions françaises</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Eater&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Creepster', cursive;
+            font-family: 'Eater', cursive;
             background-color: #1a1a1a;
             color: #ff6600;
             margin: 0;
@@ -32,7 +33,7 @@
             justify-content: center;
             align-items: center;
             box-shadow: 0 0 40px #ff6600;
-            overflow: hidden; /* Ajout pour s'assurer que rien ne déborde */
+            overflow: hidden;
         }
         .gallery {
             width: 100%;
@@ -45,7 +46,7 @@
         .gallery img {
             max-width: 100%;
             max-height: 100%;
-            object-fit: contain; /* Change de 'cover' à 'contain' */
+            object-fit: contain;
             position: absolute;
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
@@ -109,7 +110,7 @@
             gap: 20px;
         }
         .controls button {
-            font-family: 'Creepster', cursive;
+            font-family: 'Eater', cursive;
             font-size: 2rem;
             background-color: #ff6600;
             color: #1a1a1a;
@@ -167,11 +168,21 @@
         .score-change {
             animation: scoreChange 0.3s ease;
         }
+        #timer {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            background-color: rgba(26, 26, 26, 0.8);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
-    <h1>HallowIA : Célébrités, films, séries, arts, expressions...</h1>
-    <h3>bonne réponse 1 point / mauvaise réponse - 1 point</h3>
+    <h1>Expressions Françaises Effrayantes</h1>
     <div class="gallery-container">
         <div class="score-container">
             <div class="team-score">
@@ -195,6 +206,7 @@
             <div id="start-message">Cliquez sur "Suivant" pour commencer</div>
             <!-- Les images seront ajoutées ici dynamiquement -->
         </div>
+        <div id="timer">30</div>
     </div>
     <div class="controls">
         <button id="prevBtn">Précédent</button>
@@ -205,7 +217,6 @@
     <div id="loading">Chargement des images...</div>
 
     <script>
-        // Le script JavaScript reste inchangé par rapport à la version précédente
         const gallery = document.querySelector('.gallery');
         const startMessage = document.getElementById('start-message');
         const prevBtn = document.getElementById('prevBtn');
@@ -221,10 +232,12 @@
         const team1MinusBtn = document.getElementById('team1Minus');
         const team2PlusBtn = document.getElementById('team2Plus');
         const team2MinusBtn = document.getElementById('team2Minus');
+        const timerDiv = document.getElementById('timer');
         let currentIndex = -1;
         let images = [];
         let team1Score = 0;
         let team2Score = 0;
+        let timerInterval;
 
         // Configuration GitHub
         const owner = 'Succubus7';
@@ -266,6 +279,21 @@
             });
         }
 
+        // Fonction pour démarrer le minuteur
+        function startTimer() {
+            let timeLeft = 30;
+            timerDiv.textContent = timeLeft;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDiv.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showNextImage();
+                }
+            }, 1000);
+        }
+
         // Fonction pour afficher l'image suivante
         function showNextImage() {
             if (currentIndex === -1) {
@@ -276,6 +304,7 @@
             currentIndex = (currentIndex + 1) % images.length;
             gallery.querySelectorAll('img')[currentIndex].classList.add('active');
             updateImageCounter();
+            startTimer();
         }
 
         // Fonction pour afficher l'image précédente
@@ -285,6 +314,7 @@
                 currentIndex = (currentIndex - 1 + images.length) % images.length;
                 gallery.querySelectorAll('img')[currentIndex].classList.add('active');
                 updateImageCounter();
+                startTimer();
             }
         }
 
@@ -359,16 +389,4 @@
             if (e.key === '1') updateScore(1, 1);
             if (e.key === 'q') updateScore(1, -1);
             if (e.key === '2') updateScore(2, 1);
-            if (e.key === 'w') updateScore(2, -1);
-        });
-
-        // Gestion de la sortie du mode plein écran
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
-                body.classList.remove('fullscreen');
-                fullscreenBtn.textContent = 'Plein Écran';
-            }
-        });
-    </script>
-</body>
-</html>
+            if (e.key
