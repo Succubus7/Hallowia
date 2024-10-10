@@ -48,11 +48,15 @@
             max-height: 100%;
             object-fit: contain;
             position: absolute;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            display: none;
         }
         .gallery img.active {
-            opacity: 1;
+            display: block;
         }
         .score-container {
             position: absolute;
@@ -216,7 +220,7 @@
     <div class="image-counter">Image <span id="currentImage">0</span> / <span id="totalImages">0</span></div>
     <div id="loading">Chargement des images...</div>
 
-      <script>
+    <script>
         const gallery = document.querySelector('.gallery');
         const startMessage = document.getElementById('start-message');
         const prevBtn = document.getElementById('prevBtn');
@@ -264,11 +268,12 @@
                 console.log('Images filtrées:', images);
                 shuffleArray(images);
                 totalImagesSpan.textContent = images.length;
-                createImageElements();
+                await createImageElements();
                 loadingDiv.style.display = 'none';
                 console.log('Chargement terminé');
                 if (images.length > 0) {
                     nextBtn.disabled = false;
+                    showNextImage(); // Afficher la première image automatiquement
                 }
             } catch (error) {
                 console.error('Erreur lors du chargement des images:', error);
@@ -277,15 +282,22 @@
         }
 
         // Fonction pour créer les éléments img
-        function createImageElements() {
+        async function createImageElements() {
             gallery.innerHTML = ''; // Nettoyer la galerie avant d'ajouter de nouvelles images
-            images.forEach((src, index) => {
+            for (let i = 0; i < images.length; i++) {
                 const img = document.createElement('img');
-                img.src = src;
-                img.alt = `Expression française ${index + 1}`;
-                img.style.display = 'none'; // Cacher toutes les images au début
+                img.src = images[i];
+                img.alt = `Expression française ${i + 1}`;
                 gallery.appendChild(img);
-            });
+                
+                // Attendre que l'image soit chargée
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                });
+                
+                console.log(`Image ${i + 1} chargée`);
+            }
         }
 
         // Fonction pour démarrer le minuteur
@@ -310,13 +322,11 @@
                 console.log('Aucune image chargée');
                 return;
             }
-            if (currentIndex === -1) {
-                startMessage.style.display = 'none';
-            } else {
-                gallery.children[currentIndex].style.display = 'none';
+            if (currentIndex >= 0) {
+                gallery.children[currentIndex].classList.remove('active');
             }
             currentIndex = (currentIndex + 1) % images.length;
-            gallery.children[currentIndex].style.display = 'block';
+            gallery.children[currentIndex].classList.add('active');
             updateImageCounter();
             startTimer();
             console.log('Image affichée:', currentIndex);
@@ -325,9 +335,9 @@
         // Fonction pour afficher l'image précédente
         function showPrevImage() {
             if (currentIndex > 0) {
-                gallery.children[currentIndex].style.display = 'none';
+                gallery.children[currentIndex].classList.remove('active');
                 currentIndex = (currentIndex - 1 + images.length) % images.length;
-                gallery.children[currentIndex].style.display = 'block';
+                gallery.children[currentIndex].classList.add('active');
                 updateImageCounter();
                 startTimer();
             }
@@ -340,19 +350,52 @@
 
         // Fonction pour basculer en mode plein écran
         function toggleFullscreen() {
-            // ... (le code pour le plein écran reste inchangé) ...
+            if (!document.fullscreenElement) {
+                if (body.requestFullscreen) {
+                    body.requestFullscreen();
+                } else if (body.mozRequestFullScreen) {
+                    body.mozRequestFullScreen();
+                } else if (body.webkitRequestFullscreen) {
+                    body.webkitRequestFullscreen();
+                } else if (body.msRequestFullscreen) {
+                    body.msRequestFullscreen();
+                }
+                body.classList.add('fullscreen');
+                fullscreenBtn.textContent = 'Quitter Plein Écran';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                body.classList.remove('fullscreen');
+                fullscreenBtn.textContent = 'Plein Écran';
+            }
         }
 
         // Fonctions pour gérer les scores
         function updateScore(team, change) {
-            // ... (le code pour la gestion des scores reste inchangé) ...
+            const scoreDiv = team === 1 ? team1ScoreDiv : team2ScoreDiv;
+            const currentScore = team === 1 ? team1Score : team2Score;
+            const newScore = Math.max(0, currentScore + change);
+
+            if (team === 1) {
+                team1Score = newScore;
+            } else {
+                team2Score = newScore;
+            }
+
+            scoreDiv.textContent = newScore;
+            scoreDiv.classList.add('score-change');
+            setTimeout(() => scoreDiv.classList.remove('score-change'), 300);
         }
 
         // Initialisation
-        loadImagesFromGitHub().then(() => {
-            console.log('Initialisation terminée');
-            nextBtn.disabled = false;
-        });
+        loadImagesFromGitHub();
 
         // Écouteurs d'événements
         nextBtn.addEventListener('click', showNextImage);
@@ -373,6 +416,14 @@
             if (e.key === '2') updateScore(2, 1);
             if (e.key === 'w') updateScore(2, -1);
         });
+
+        // Gestion de la sortie du mode plein écran
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                body.classList.remove('fullscreen');
+                fullscreenBtn.textContent = 'Plein Écran';
+            }
+        });
     </script>
-    </body>
+</body>
 </html>
