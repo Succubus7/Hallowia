@@ -16,16 +16,16 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            font-size: 24px; /* Augmentation de la taille de base du texte */
+            font-size: 24px;
         }
         h1 {
-            font-size: 5rem; /* Titre plus grand */
+            font-size: 5rem;
             text-shadow: 4px 4px 8px #000000;
             margin: 40px 0;
         }
         .gallery-container {
-            width: 90vw; /* Utilisation de la largeur de vue pour s'adapter à l'écran */
-            height: 70vh; /* Utilisation de la hauteur de vue pour s'adapter à l'écran */
+            width: 90vw;
+            height: 60vh;
             position: relative;
         }
         .gallery {
@@ -78,7 +78,6 @@
             font-size: 2.5rem;
             margin-top: 40px;
         }
-        /* Style pour le mode plein écran */
         .fullscreen .gallery-container {
             width: 100vw;
             height: 100vh;
@@ -89,8 +88,28 @@
         }
         .fullscreen .controls,
         .fullscreen .image-counter,
-        .fullscreen h1 {
+        .fullscreen h1,
+        .fullscreen .score-container {
             display: none;
+        }
+        .score-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .team-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .score-controls {
+            display: flex;
+            gap: 10px;
+        }
+        .score-controls button {
+            font-size: 1.5rem;
+            padding: 10px 20px;
         }
     </style>
 </head>
@@ -107,6 +126,24 @@
         <button id="fullscreenBtn">Plein Écran</button>
     </div>
     <div class="image-counter">Image <span id="currentImage">1</span> / <span id="totalImages">0</span></div>
+    <div class="score-container">
+        <div class="team-score">
+            <h2>Équipe 1</h2>
+            <p>Score: <span id="team1Score">0</span></p>
+            <div class="score-controls">
+                <button id="team1Minus">-</button>
+                <button id="team1Plus">+</button>
+            </div>
+        </div>
+        <div class="team-score">
+            <h2>Équipe 2</h2>
+            <p>Score: <span id="team2Score">0</span></p>
+            <div class="score-controls">
+                <button id="team2Minus">-</button>
+                <button id="team2Plus">+</button>
+            </div>
+        </div>
+    </div>
     <div id="loading">Chargement des images...</div>
 
     <script>
@@ -118,13 +155,21 @@
         const totalImagesSpan = document.getElementById('totalImages');
         const loadingDiv = document.getElementById('loading');
         const body = document.body;
+        const team1ScoreSpan = document.getElementById('team1Score');
+        const team2ScoreSpan = document.getElementById('team2Score');
+        const team1PlusBtn = document.getElementById('team1Plus');
+        const team1MinusBtn = document.getElementById('team1Minus');
+        const team2PlusBtn = document.getElementById('team2Plus');
+        const team2MinusBtn = document.getElementById('team2Minus');
         let currentIndex = 0;
         let images = [];
+        let team1Score = 0;
+        let team2Score = 0;
 
         // Configuration GitHub
-        const owner = 'Succubus7';
-        const repo = 'Hallowia';
-        const path = '/images';
+        const owner = 'VOTRE_NOM_UTILISATEUR_GITHUB';
+        const repo = 'VOTRE_NOM_DE_REPO';
+        const path = 'chemin/vers/votre/dossier/images';
 
         // Fonction pour charger les images depuis GitHub
         async function loadImagesFromGitHub() {
@@ -181,11 +226,11 @@
             if (!document.fullscreenElement) {
                 if (body.requestFullscreen) {
                     body.requestFullscreen();
-                } else if (body.mozRequestFullScreen) { // Firefox
+                } else if (body.mozRequestFullScreen) {
                     body.mozRequestFullScreen();
-                } else if (body.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                } else if (body.webkitRequestFullscreen) {
                     body.webkitRequestFullscreen();
-                } else if (body.msRequestFullscreen) { // IE/Edge
+                } else if (body.msRequestFullscreen) {
                     body.msRequestFullscreen();
                 }
                 body.classList.add('fullscreen');
@@ -205,6 +250,17 @@
             }
         }
 
+        // Fonctions pour gérer les scores
+        function updateScore(team, change) {
+            if (team === 1) {
+                team1Score = Math.max(0, team1Score + change);
+                team1ScoreSpan.textContent = team1Score;
+            } else {
+                team2Score = Math.max(0, team2Score + change);
+                team2ScoreSpan.textContent = team2Score;
+            }
+        }
+
         // Initialisation
         loadImagesFromGitHub();
 
@@ -212,12 +268,20 @@
         nextBtn.addEventListener('click', showNextImage);
         prevBtn.addEventListener('click', showPrevImage);
         fullscreenBtn.addEventListener('click', toggleFullscreen);
+        team1PlusBtn.addEventListener('click', () => updateScore(1, 1));
+        team1MinusBtn.addEventListener('click', () => updateScore(1, -1));
+        team2PlusBtn.addEventListener('click', () => updateScore(2, 1));
+        team2MinusBtn.addEventListener('click', () => updateScore(2, -1));
 
         // Gestion des touches du clavier
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight') showNextImage();
             if (e.key === 'ArrowLeft') showPrevImage();
             if (e.key === 'f') toggleFullscreen();
+            if (e.key === '1') updateScore(1, 1);
+            if (e.key === 'q') updateScore(1, -1);
+            if (e.key === '2') updateScore(2, 1);
+            if (e.key === 'w') updateScore(2, -1);
         });
 
         // Gestion de la sortie du mode plein écran
