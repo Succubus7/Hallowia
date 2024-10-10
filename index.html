@@ -14,26 +14,76 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
             font-size: 24px;
         }
         h1 {
-            font-size: 5rem;
+            font-size: 4rem;
             text-shadow: 4px 4px 8px #000000;
-            margin: 40px 0;
+            margin: 20px 0;
+        }
+        .score-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-bottom: 20px;
+            background-color: #2a2a2a;
+            padding: 10px;
+            box-shadow: 0 0 20px #ff6600;
+        }
+        .team-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 20px;
+            border-radius: 10px;
+            background-color: #3a3a3a;
+        }
+        .team-score h2 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        .score {
+            font-size: 3rem;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        .score-controls {
+            display: flex;
+            gap: 10px;
+        }
+        .score-controls button {
+            font-size: 1.5rem;
+            padding: 5px 15px;
+            background-color: #ff6600;
+            border: none;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .score-controls button:hover {
+            background-color: #ff8533;
+            transform: scale(1.1);
+        }
+        .score-controls button:active {
+            transform: scale(0.9);
         }
         .gallery-container {
             width: 90vw;
             height: 60vh;
             position: relative;
+            background-color: #2a2a2a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 40px #ff6600;
         }
         .gallery {
             width: 100%;
             height: 100%;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 40px #ff6600;
         }
         .gallery img {
             width: 100%;
@@ -47,36 +97,36 @@
             opacity: 1;
         }
         .controls {
-            margin-top: 40px;
+            margin-top: 20px;
             display: flex;
             justify-content: center;
             gap: 20px;
         }
-        button {
+        .controls button {
             font-family: 'Creepster', cursive;
             font-size: 2rem;
             background-color: #ff6600;
             color: #1a1a1a;
             border: none;
-            padding: 20px 40px;
+            padding: 10px 20px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
+            transition: all 0.3s ease;
         }
-        button:hover {
+        .controls button:hover {
             background-color: #ff8533;
             transform: scale(1.05);
         }
-        button:active {
+        .controls button:active {
             transform: scale(0.95);
         }
         .image-counter {
-            font-size: 2rem;
-            margin-top: 20px;
+            font-size: 1.5rem;
+            margin-top: 10px;
         }
         #loading {
             color: #ff6600;
             font-size: 2.5rem;
-            margin-top: 40px;
+            margin-top: 20px;
         }
         .fullscreen .gallery-container {
             width: 100vw;
@@ -92,31 +142,44 @@
         .fullscreen .score-container {
             display: none;
         }
-        .score-container {
-            display: flex;
-            justify-content: space-around;
-            width: 100%;
-            margin-top: 20px;
+        #start-message {
+            font-size: 3rem;
+            text-align: center;
         }
-        .team-score {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        @keyframes scoreChange {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
-        .score-controls {
-            display: flex;
-            gap: 10px;
-        }
-        .score-controls button {
-            font-size: 1.5rem;
-            padding: 10px 20px;
+        .score-change {
+            animation: scoreChange 0.3s ease;
         }
     </style>
 </head>
 <body>
+    <div class="score-container">
+        <div class="team-score">
+            <h2>Équipe 1</h2>
+            <div id="team1Score" class="score">0</div>
+            <div class="score-controls">
+                <button id="team1Minus">-</button>
+                <button id="team1Plus">+</button>
+            </div>
+        </div>
+        <div class="team-score">
+            <h2>Équipe 2</h2>
+            <div id="team2Score" class="score">0</div>
+            <div class="score-controls">
+                <button id="team2Minus">-</button>
+                <button id="team2Plus">+</button>
+            </div>
+        </div>
+    </div>
+    
     <h1>Expressions Françaises Effrayantes</h1>
     <div class="gallery-container">
         <div class="gallery">
+            <div id="start-message">Cliquez sur "Suivant" pour commencer</div>
             <!-- Les images seront ajoutées ici dynamiquement -->
         </div>
     </div>
@@ -125,29 +188,12 @@
         <button id="nextBtn">Suivant</button>
         <button id="fullscreenBtn">Plein Écran</button>
     </div>
-    <div class="image-counter">Image <span id="currentImage">1</span> / <span id="totalImages">0</span></div>
-    <div class="score-container">
-        <div class="team-score">
-            <h2>Équipe 1</h2>
-            <p>Score: <span id="team1Score">0</span></p>
-            <div class="score-controls">
-                <button id="team1Minus">-</button>
-                <button id="team1Plus">+</button>
-            </div>
-        </div>
-        <div class="team-score">
-            <h2>Équipe 2</h2>
-            <p>Score: <span id="team2Score">0</span></p>
-            <div class="score-controls">
-                <button id="team2Minus">-</button>
-                <button id="team2Plus">+</button>
-            </div>
-        </div>
-    </div>
+    <div class="image-counter">Image <span id="currentImage">0</span> / <span id="totalImages">0</span></div>
     <div id="loading">Chargement des images...</div>
 
     <script>
         const gallery = document.querySelector('.gallery');
+        const startMessage = document.getElementById('start-message');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const fullscreenBtn = document.getElementById('fullscreenBtn');
@@ -155,21 +201,29 @@
         const totalImagesSpan = document.getElementById('totalImages');
         const loadingDiv = document.getElementById('loading');
         const body = document.body;
-        const team1ScoreSpan = document.getElementById('team1Score');
-        const team2ScoreSpan = document.getElementById('team2Score');
+        const team1ScoreDiv = document.getElementById('team1Score');
+        const team2ScoreDiv = document.getElementById('team2Score');
         const team1PlusBtn = document.getElementById('team1Plus');
         const team1MinusBtn = document.getElementById('team1Minus');
         const team2PlusBtn = document.getElementById('team2Plus');
         const team2MinusBtn = document.getElementById('team2Minus');
-        let currentIndex = 0;
+        let currentIndex = -1;
         let images = [];
         let team1Score = 0;
         let team2Score = 0;
 
         // Configuration GitHub
-        const owner = 'VOTRE_NOM_UTILISATEUR_GITHUB';
-        const repo = 'VOTRE_NOM_DE_REPO';
-        const path = 'chemin/vers/votre/dossier/images';
+        const owner = 'Succubus7';
+        const repo = 'Hallowia';
+        const path = '/images';
+
+        // Fonction pour mélanger un tableau
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
 
         // Fonction pour charger les images depuis GitHub
         async function loadImagesFromGitHub() {
@@ -178,6 +232,7 @@
                 const data = await response.json();
                 images = data.filter(file => file.type === 'file' && file.name.match(/\.(jpg|jpeg|png|gif)$/i))
                                 .map(file => file.download_url);
+                shuffleArray(images);
                 totalImagesSpan.textContent = images.length;
                 createImageElements();
                 loadingDiv.style.display = 'none';
@@ -193,27 +248,30 @@
                 const img = document.createElement('img');
                 img.src = src;
                 img.alt = `Expression française ${index + 1}`;
-                if (index === 0) img.classList.add('active');
                 gallery.appendChild(img);
             });
         }
 
         // Fonction pour afficher l'image suivante
         function showNextImage() {
-            const imageElements = gallery.querySelectorAll('img');
-            imageElements[currentIndex].classList.remove('active');
+            if (currentIndex === -1) {
+                startMessage.style.display = 'none';
+            } else {
+                gallery.querySelectorAll('img')[currentIndex].classList.remove('active');
+            }
             currentIndex = (currentIndex + 1) % images.length;
-            imageElements[currentIndex].classList.add('active');
+            gallery.querySelectorAll('img')[currentIndex].classList.add('active');
             updateImageCounter();
         }
 
         // Fonction pour afficher l'image précédente
         function showPrevImage() {
-            const imageElements = gallery.querySelectorAll('img');
-            imageElements[currentIndex].classList.remove('active');
-            currentIndex = (currentIndex - 1 + images.length) % images.length;
-            imageElements[currentIndex].classList.add('active');
-            updateImageCounter();
+            if (currentIndex > 0) {
+                gallery.querySelectorAll('img')[currentIndex].classList.remove('active');
+                currentIndex = (currentIndex - 1 + images.length) % images.length;
+                gallery.querySelectorAll('img')[currentIndex].classList.add('active');
+                updateImageCounter();
+            }
         }
 
         // Fonction pour mettre à jour le compteur d'images
@@ -252,13 +310,19 @@
 
         // Fonctions pour gérer les scores
         function updateScore(team, change) {
+            const scoreDiv = team === 1 ? team1ScoreDiv : team2ScoreDiv;
+            const currentScore = team === 1 ? team1Score : team2Score;
+            const newScore = Math.max(0, currentScore + change);
+
             if (team === 1) {
-                team1Score = Math.max(0, team1Score + change);
-                team1ScoreSpan.textContent = team1Score;
+                team1Score = newScore;
             } else {
-                team2Score = Math.max(0, team2Score + change);
-                team2ScoreSpan.textContent = team2Score;
+                team2Score = newScore;
             }
+
+            scoreDiv.textContent = newScore;
+            scoreDiv.classList.add('score-change');
+            setTimeout(() => scoreDiv.classList.remove('score-change'), 300);
         }
 
         // Initialisation
