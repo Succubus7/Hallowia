@@ -183,9 +183,9 @@
             border-radius: 10px;
             z-index: 10;
         }
-                #timerControls {
+        #timerControls {
             position: absolute;
-            bottom: 60px;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 10;
@@ -230,9 +230,10 @@
             <div id="start-message">Cliquez sur "Suivant" pour commencer</div>
             <!-- Les images seront ajoutées ici dynamiquement -->
         </div>
-    <div id="timer">30</div>
-    <div id="timerControls">
-        <button id="timerToggle">Arrêter</button>
+        <div id="timer">30</div>
+        <div id="timerControls">
+            <button id="timerToggle">Démarrer</button>
+        </div>
     </div>
     <div class="controls">
         <button id="prevBtn">Précédent</button>
@@ -241,8 +242,7 @@
     </div>
     <div class="image-counter">Image <span id="currentImage">0</span> / <span id="totalImages">0</span></div>
     <div id="loading">Chargement des images...</div>
-
-    <script>
+        <script>
         const gallery = document.querySelector('.gallery');
         const startMessage = document.getElementById('start-message');
         const prevBtn = document.getElementById('prevBtn');
@@ -259,16 +259,22 @@
         const team2PlusBtn = document.getElementById('team2Plus');
         const team2MinusBtn = document.getElementById('team2Minus');
         const timerDiv = document.getElementById('timer');
+        const timerToggleBtn = document.getElementById('timerToggle');
         let currentIndex = -1;
         let images = [];
         let team1Score = 0;
         let team2Score = 0;
         let timerInterval;
+        let isTimerRunning = false;
+        let timeLeft = 30;
 
         // Configuration GitHub
         const owner = 'Succubus7';
         const repo = 'Hallowia';
         const path = '/images';
+
+        // Charger le son
+        const timerEndSound = new Audio('https://soundbible.com/grab.php?id=1496&type=mp3');
 
         // Fonction pour mélanger un tableau
         function shuffleArray(array) {
@@ -295,7 +301,6 @@
                 console.log('Chargement terminé');
                 if (images.length > 0) {
                     nextBtn.disabled = false;
-                    showNextImage(); // Afficher la première image automatiquement
                 }
             } catch (error) {
                 console.error('Erreur lors du chargement des images:', error);
@@ -321,13 +326,6 @@
                 console.log(`Image ${i + 1} chargée`);
             }
         }
-
-        const timerToggleBtn = document.getElementById('timerToggle');
-        let isTimerRunning = false;
-        let timeLeft = 30;
-
-        // Charger le son
-        const timerEndSound = new Audio('https://soundbible.com/grab.php?id=1496&type=mp3');
 
         // Fonction pour démarrer le minuteur
         function startTimer() {
@@ -389,7 +387,6 @@
             gallery.children[currentIndex].classList.add('active');
             updateImageCounter();
             resetTimer();
-            startTimer();
             console.log('Image affichée:', currentIndex);
         }
 
@@ -401,7 +398,6 @@
                 gallery.children[currentIndex].classList.add('active');
                 updateImageCounter();
                 resetTimer();
-                startTimer();
             }
         }
 
@@ -410,16 +406,16 @@
             currentImageSpan.textContent = currentIndex + 1;
         }
 
-        // Fonction pour basculer en mode plein écran
+               // Fonction pour basculer en mode plein écran
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 if (body.requestFullscreen) {
                     body.requestFullscreen();
-                } else if (body.mozRequestFullScreen) {
+                } else if (body.mozRequestFullScreen) { // Firefox
                     body.mozRequestFullScreen();
-                } else if (body.webkitRequestFullscreen) {
+                } else if (body.webkitRequestFullscreen) { // Chrome, Safari et Opera
                     body.webkitRequestFullscreen();
-                } else if (body.msRequestFullscreen) {
+                } else if (body.msRequestFullscreen) { // IE/Edge
                     body.msRequestFullscreen();
                 }
                 body.classList.add('fullscreen');
@@ -456,7 +452,7 @@
             setTimeout(() => scoreDiv.classList.remove('score-change'), 300);
         }
 
-   // Initialisation
+        // Initialisation
         loadImagesFromGitHub();
 
         // Écouteurs d'événements
