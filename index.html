@@ -52,18 +52,122 @@
     </div>
     <div class="image-counter">Image <span id="currentImage">0</span> / <span id="totalImages">0</span></div>
     <div id="loading">Chargement des images...</div>
-    <div id="rulesOverlay">
-        <div id="rulesContent">
-            <h2>Règles du jeu</h2>
-            <ul>
-                <li>À tour de rôle, l'équipe doit trouver ce que l'on cherche.</li>
-                <li>Seul le chef donnera l'ultime réponse.</li>
-                <li>Une fois cela fait, l'équipe d'en face peut apporter elle aussi une réponse <strong>différente</strong> si elle pense que l'équipe adverse se trompe.</li>
-                <li>Attention : si erreur, alors -1 point.</li>
-            </ul>
-            <button id="startGameBtn">J'ai compris, commencer le jeu</button>
-        </div>
+   <div id="rulesOverlay" class="overlay">
+    <div class="overlay-content">
+        <h2>Hallowia : Le Grand Quiz Fantôme</h2>
+        <h3>Règles du jeu</h3>
+        <ol>
+            <li><strong>Équipes :</strong> 2 équipes de 6 joueurs, dont 1 chef par équipe.</li>
+            <li><strong>Catégories :</strong> Expressions françaises, célébrités, art, films, séries.</li>
+            <li><strong>Déroulement :</strong> 
+                <ul>
+                    <li>Une image s'affiche pendant 30 secondes.</li>
+                    <li>L'équipe active discute et le chef donne la réponse finale.</li>
+                </ul>
+            </li>
+            <li><strong>Points :</strong> 
+                <ul>
+                    <li>Bonne réponse : +1 point</li>
+                    <li>Mauvaise réponse : 0 point</li>
+                </ul>
+            </li>
+            <li><strong>Équipe adverse :</strong> 
+                <ul>
+                    <li>Peut proposer une réponse différente si l'équipe active se trompe.</li>
+                    <li>Bonne réponse : +1 point</li>
+                    <li>Mauvaise réponse : -1 point</li>
+                </ul>
+            </li>
+            <li><strong>Fin du jeu :</strong> L'équipe avec le plus de points gagne.</li>
+        </ol>
+        <button id="closeRules">Fermer</button>
     </div>
+</div>
+
+<button id="showRules">Règles du jeu</button>
+
+<style>
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        overflow-y: auto;
+    }
+
+    .overlay-content {
+        background-color: #2a2a2a;
+        color: #f0f0f0;
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 600px;
+        box-shadow: 0 0 20px rgba(255, 102, 0, 0.3);
+    }
+
+    .overlay h2, .overlay h3 {
+        color: #ff6600;
+        text-shadow: 2px 2px 4px #000000;
+    }
+
+    .overlay ol, .overlay ul {
+        padding-left: 20px;
+    }
+
+    .overlay li {
+        margin-bottom: 10px;
+    }
+
+    #showRules, #closeRules {
+        background-color: #ff6600;
+        color: #1a1a1a;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    #showRules:hover, #closeRules:hover {
+        background-color: #ff8533;
+    }
+
+    #showRules {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 999;
+    }
+</style>
+
+<script>
+    // Ajoutez ce code JavaScript à la fin de votre script existant
+
+    const rulesOverlay = document.getElementById('rulesOverlay');
+    const showRulesBtn = document.getElementById('showRules');
+    const closeRulesBtn = document.getElementById('closeRules');
+
+    showRulesBtn.addEventListener('click', () => {
+        rulesOverlay.style.display = 'block';
+    });
+
+    closeRulesBtn.addEventListener('click', () => {
+        rulesOverlay.style.display = 'none';
+    });
+
+    // Fermer l'overlay si on clique en dehors du contenu
+    rulesOverlay.addEventListener('click', (e) => {
+        if (e.target === rulesOverlay) {
+            rulesOverlay.style.display = 'none';
+        }
+    });
+</script>
     <script src="script.js"></script>
 </body>
 </html>
