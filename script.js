@@ -294,7 +294,6 @@ document.addEventListener('fullscreenchange', () => {
     }
 });
 
-// Gestion de l'overlay des règles
 showRulesBtn.addEventListener('click', () => {
     rulesOverlay.style.display = 'block';
 });
