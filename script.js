@@ -1,4 +1,4 @@
-// Sélection des éléments du DOM
+// Éléments du DOM
 const gallery = document.querySelector('.gallery');
 const startMessage = document.getElementById('start-message');
 const prevBtn = document.getElementById('prevBtn');
@@ -21,7 +21,8 @@ const nameForm = document.getElementById('nameForm');
 const team1NameInput = document.getElementById('team1Name');
 const team2NameInput = document.getElementById('team2Name');
 const rulesOverlay = document.getElementById('rulesOverlay');
-const startGameBtn = document.getElementById('startGameBtn');
+const showRulesBtn = document.getElementById('showRules');
+const closeRulesBtn = document.getElementById('closeRules');
 
 // Variables globales
 let currentIndex = -1;
@@ -248,21 +249,9 @@ function updateTeamNames() {
     document.querySelector('.team-score:nth-child(2) h2').textContent = team2Name;
 }
 
-// Fonction pour afficher les règles
-function showRules() {
-    rulesOverlay.style.display = 'flex';
-}
-
-// Fonction pour cacher les règles et afficher le message de départ
-function hideRulesAndShowStartMessage() {
-    rulesOverlay.style.display = 'none';
-    startMessage.style.display = 'block';
-}
-
 // Fonction d'initialisation
 function init() {
     teamNameForm.style.display = 'flex';
-    showRules(); // Afficher les règles dès le début
 }
 
 // Gestionnaire de soumission du formulaire
@@ -272,8 +261,7 @@ nameForm.addEventListener('submit', function(e) {
     team2Name = team2NameInput.value || "Équipe 2";
     updateTeamNames();
     teamNameForm.style.display = 'none';
-    showRules(); // Afficher les règles après avoir défini les noms d'équipes
-    loadImagesFromGitHub(); // Commencer à charger les images
+    loadImagesFromGitHub(); // Commencer à charger les images après avoir défini les noms d'équipes
 });
 
 // Écouteurs d'événements
@@ -285,7 +273,6 @@ team1MinusBtn.addEventListener('click', () => updateScore(1, -1));
 team2PlusBtn.addEventListener('click', () => updateScore(2, 1));
 team2MinusBtn.addEventListener('click', () => updateScore(2, -1));
 timerToggleBtn.addEventListener('click', toggleTimer);
-startGameBtn.addEventListener('click', hideRulesAndShowStartMessage);
 
 // Gestion des touches du clavier
 document.addEventListener('keydown', (e) => {
@@ -304,6 +291,22 @@ document.addEventListener('fullscreenchange', () => {
     if (!document.fullscreenElement) {
         body.classList.remove('fullscreen');
         fullscreenBtn.textContent = 'Plein Écran';
+    }
+});
+
+// Gestion de l'overlay des règles
+showRulesBtn.addEventListener('click', () => {
+    rulesOverlay.style.display = 'block';
+});
+
+closeRulesBtn.addEventListener('click', () => {
+    rulesOverlay.style.display = 'none';
+});
+
+// Fermer l'overlay si on clique en dehors du contenu
+rulesOverlay.addEventListener('click', (e) => {
+    if (e.target === rulesOverlay) {
+        rulesOverlay.style.display = 'none';
     }
 });
 
