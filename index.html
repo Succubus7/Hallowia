@@ -86,30 +86,6 @@
 </div>
 
 <button id="showRules">Règles du jeu</button>
-
-
-<script>
-    // Ajoutez ce code JavaScript à la fin de votre script existant
-
-    const rulesOverlay = document.getElementById('rulesOverlay');
-    const showRulesBtn = document.getElementById('showRules');
-    const closeRulesBtn = document.getElementById('closeRules');
-
-    showRulesBtn.addEventListener('click', () => {
-        rulesOverlay.style.display = 'block';
-    });
-
-    closeRulesBtn.addEventListener('click', () => {
-        rulesOverlay.style.display = 'none';
-    });
-
-    // Fermer l'overlay si on clique en dehors du contenu
-    rulesOverlay.addEventListener('click', (e) => {
-        if (e.target === rulesOverlay) {
-            rulesOverlay.style.display = 'none';
-        }
-    });
-</script>
     <script src="script.js"></script>
 </body>
 </html>
